@@ -1,0 +1,63 @@
+<% const active = 'imports' %>
+<%- include('partials/header') %>
+
+<a href="/imports/detail/<%= order.import_id %>" class="btn btn-sm btn-outline-secondary mb-3"><i class="bi bi-arrow-left"></i> Back</a>
+<h4><i class="bi bi-pencil"></i> <%= t('edit') %>: <%= order.import_code %></h4>
+
+<form method="POST" action="/imports/edit/<%= order.import_id %>">
+  <div class="row mb-3" style="max-width:600px">
+    <div class="col"><input type="text" name="supplier_name" class="form-control" placeholder="<%= t('supplier') %>" value="<%= order.supplier_name || '' %>"></div>
+    <div class="col"><input type="text" name="note" class="form-control" placeholder="<%= t('note') %>" value="<%= order.note || '' %>"></div>
+  </div>
+
+  <h6>Items</h6>
+  <div id="importLines">
+    <% lines.forEach(l => { %>
+    <div class="row mb-2 line-row gx-2" style="max-width:700px">
+      <div class="col">
+        <select name="product_ids" class="form-select form-select-sm ts-select" required>
+          <option value="">-- <%= t('products') %> --</option>
+          <% products.forEach(p => { %><option value="<%= p.product_id %>" <%= p.product_id == l.product_id ? 'selected' : '' %>><%= p.product_name %></option><% }) %>
+        </select>
+      </div>
+      <div class="col-2"><input type="number" name="quantities" class="form-control form-control-sm" value="<%= l.quantity %>" step="1" required></div>
+      <div class="col-3"><input type="number" name="unit_prices" class="form-control form-control-sm" value="<%= l.unit_price %>" step="1000" required></div>
+      <div class="col-auto"><button type="button" class="btn btn-sm btn-outline-danger" onclick="removeLine(this)"><i class="bi bi-x"></i></button></div>
+    </div>
+    <% }) %>
+  </div>
+  <button type="button" class="btn btn-sm btn-outline-secondary mt-2" onclick="addLine()"><i class="bi bi-plus"></i> <%= t('add_line') %></button>
+
+  <div class="mt-4">
+    <button type="submit" class="btn btn-primary"><i class="bi bi-check"></i> <%= t('save') %></button>
+    <a href="/imports/detail/<%= order.import_id %>" class="btn btn-outline-secondary ms-2"><%= t('cancel') %></a>
+  </div>
+</form>
+
+<script>
+const importLineTemplate = `
+  <div class="row mb-2 line-row gx-2" style="max-width:700px">
+    <div class="col">
+      <select name="product_ids" class="form-select form-select-sm ts-select-new" required>
+        <option value="">-- <%= t('products') %> --</option>
+        <% products.forEach(p => { %><option value="<%= p.product_id %>"><%= p.product_name %></option><% }) %>
+      </select>
+    </div>
+    <div class="col-2"><input type="number" name="quantities" class="form-control form-control-sm" placeholder="<%= t('quantity') %>" step="1" required></div>
+    <div class="col-3"><input type="number" name="unit_prices" class="form-control form-control-sm" placeholder="<%= t('unit_price') %>" step="1000" required></div>
+    <div class="col-auto"><button type="button" class="btn btn-sm btn-outline-danger" onclick="removeLine(this)"><i class="bi bi-x"></i></button></div>
+  </div>`;
+
+function addLine() {
+  document.getElementById('importLines').insertAdjacentHTML('beforeend', importLineTemplate);
+  document.querySelectorAll('.ts-select-new').forEach(el => {
+    el.classList.remove('ts-select-new');
+    new TomSelect(el, { create: false, sortField: { field: 'text', direction: 'asc' } });
+  });
+}
+function removeLine(btn) {
+  btn.closest('.line-row').remove();
+}
+</script>
+
+<%- include('partials/footer') %>

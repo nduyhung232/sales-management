@@ -1,0 +1,81 @@
+<% const active = 'imports' %>
+<%- include('partials/header') %>
+
+<div class="d-flex flex-wrap justify-content-between align-items-center mb-3 gap-2">
+  <h4 class="mb-0"><i class="bi bi-download"></i> <%= t('import') %></h4>
+  <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addModal"><i class="bi bi-plus"></i> <%= t('create_import') %></button>
+</div>
+
+<div class="table-responsive">
+<table class="table table-hover">
+  <thead><tr><th><%= t('code') %></th><th><%= t('supplier') %></th><th><%= t('import_date') %></th><th><%= t('total') %></th><th></th></tr></thead>
+  <tbody>
+    <% orders.forEach(o => { %>
+    <tr>
+      <td><%= o.import_code %></td>
+      <td><%= o.supplier_name || '-' %></td>
+      <td><%= o.import_date %></td>
+      <td class="text-end"><%= Number(o.total_amount).toLocaleString() %>đ</td>
+      <td><a href="/imports/detail/<%= o.import_id %>" class="btn btn-sm btn-outline-primary"><i class="bi bi-eye"></i></a></td>
+    </tr>
+    <% }) %>
+    <% if (!orders.length) { %><tr><td colspan="5" class="text-center text-muted"><%= t('no_imports') %></td></tr><% } %>
+  </tbody>
+</table>
+</div>
+
+<div class="modal fade" id="addModal"><div class="modal-dialog modal-lg"><div class="modal-content">
+  <form method="POST" action="/imports/create">
+    <div class="modal-header"><h5><%= t('create_import') %></h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
+    <div class="modal-body">
+      <div class="row mb-3">
+        <div class="col"><input type="text" name="supplier_name" class="form-control" placeholder="<%= t('supplier') %>"></div>
+        <div class="col"><input type="text" name="note" class="form-control" placeholder="<%= t('note') %>"></div>
+      </div>
+      <h6>Items</h6>
+      <div id="importLines">
+        <div class="row mb-2 line-row gx-2">
+          <div class="col">
+            <select name="product_ids" class="form-select form-select-sm ts-select" required>
+              <option value="">-- <%= t('products') %> --</option>
+              <% products.forEach(p => { %><option value="<%= p.product_id %>"><%= p.product_name %></option><% }) %>
+            </select>
+          </div>
+          <div class="col-2"><input type="number" name="quantities" class="form-control form-control-sm" placeholder="<%= t('quantity') %>" step="1" required></div>
+          <div class="col-3"><input type="number" name="unit_prices" class="form-control form-control-sm" placeholder="<%= t('unit_price') %>" step="1000" required></div>
+          <div class="col-auto"><button type="button" class="btn btn-sm btn-outline-danger" onclick="removeLine(this)"><i class="bi bi-x"></i></button></div>
+        </div>
+      </div>
+      <button type="button" class="btn btn-sm btn-outline-secondary mt-2" onclick="addLine()"><i class="bi bi-plus"></i> <%= t('add_line') %></button>
+    </div>
+    <div class="modal-footer"><button type="submit" class="btn btn-primary"><%= t('save') %></button></div>
+  </form>
+</div></div></div>
+
+<script>
+const importLineTemplate = `
+  <div class="row mb-2 line-row gx-2">
+    <div class="col">
+      <select name="product_ids" class="form-select form-select-sm ts-select-new" required>
+        <option value="">-- <%= t('products') %> --</option>
+        <% products.forEach(p => { %><option value="<%= p.product_id %>"><%= p.product_name %></option><% }) %>
+      </select>
+    </div>
+    <div class="col-2"><input type="number" name="quantities" class="form-control form-control-sm" placeholder="<%= t('quantity') %>" step="1" required></div>
+    <div class="col-3"><input type="number" name="unit_prices" class="form-control form-control-sm" placeholder="<%= t('unit_price') %>" step="1000" required></div>
+    <div class="col-auto"><button type="button" class="btn btn-sm btn-outline-danger" onclick="removeLine(this)"><i class="bi bi-x"></i></button></div>
+  </div>`;
+
+function addLine() {
+  document.getElementById('importLines').insertAdjacentHTML('beforeend', importLineTemplate);
+  document.querySelectorAll('.ts-select-new').forEach(el => {
+    el.classList.remove('ts-select-new');
+    new TomSelect(el, { create: false, sortField: { field: 'text', direction: 'asc' } });
+  });
+}
+function removeLine(btn) {
+  btn.closest('.line-row').remove();
+}
+</script>
+
+<%- include('partials/footer') %>

@@ -1,0 +1,33 @@
+<% const active = 'sales' %>
+<%- include('partials/header') %>
+
+<a href="/sales" class="btn btn-sm btn-outline-secondary mb-3"><i class="bi bi-arrow-left"></i> Back</a>
+<h4><%= t('sales') %>: <%= order.sale_code %></h4>
+<p>
+  <strong><%= t('customer_name') %>:</strong> <%= order.customer_name || 'Walk-in' %> |
+  <strong><%= t('customer_phone') %>:</strong> <%= order.customer_phone || '-' %> |
+  <strong><%= t('sale_date') %>:</strong> <%= order.sale_date %> |
+  <strong><%= t('payment_method') %>:</strong> <%= order.payment_method %>
+</p>
+<p>
+  <strong><%= t('total') %>:</strong> <%= Number(order.total_amount).toLocaleString() %>đ |
+  <strong><%= t('discount') %>:</strong> <%= Number(order.discount).toLocaleString() %>đ |
+  <strong><%= t('final_amount') %>:</strong> <span class="text-success fw-bold"><%= Number(order.final_amount).toLocaleString() %>đ</span>
+</p>
+
+<table class="table">
+  <thead><tr><th><%= t('product_code') %></th><th><%= t('product_name') %></th><th><%= t('quantity') %></th><th><%= t('unit_price') %></th><th><%= t('amount') %></th></tr></thead>
+  <tbody>
+    <% lines.forEach(l => { %>
+    <tr>
+      <td><%= l.product_code %></td>
+      <td><%= l.product_name %></td>
+      <td><%= l.quantity %></td>
+      <td class="text-end"><%= Number(l.unit_price).toLocaleString() %>đ</td>
+      <td class="text-end"><%= Number(l.line_amount).toLocaleString() %>đ</td>
+    </tr>
+    <% }) %>
+  </tbody>
+</table>
+
+<%- include('partials/footer') %>

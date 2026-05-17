@@ -1,0 +1,57 @@
+<% const active = 'products' %>
+<%- include('partials/header') %>
+
+<div class="d-flex flex-wrap justify-content-between align-items-center mb-3 gap-2">
+  <h4 class="mb-0"><i class="bi bi-box"></i> <%= t('products') %></h4>
+  <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addModal"><i class="bi bi-plus"></i> <%= t('add_product') %></button>
+</div>
+
+<form class="mb-3">
+  <div class="input-group" style="max-width:100%">
+    <input type="text" name="q" class="form-control" placeholder="<%= t('search_placeholder') %>" value="<%= search %>">
+    <button class="btn btn-outline-secondary"><i class="bi bi-search"></i></button>
+  </div>
+</form>
+
+<div class="table-responsive">
+<table class="table table-hover">
+  <thead><tr><th><%= t('code') %></th><th><%= t('name') %></th><th><%= t('category') %></th><th><%= t('unit') %></th><th><%= t('price') %></th><th><%= t('stock') %></th></tr></thead>
+  <tbody>
+    <% products.forEach(p => { %>
+    <tr>
+      <td><%= p.product_code %></td>
+      <td><%= p.product_name %></td>
+      <td><%= p.category_name || '-' %></td>
+      <td><%= p.unit || '-' %></td>
+      <td class="text-end"><%= Number(p.sell_price).toLocaleString() %>đ</td>
+      <td class="text-end"><%= p.stock_qty %></td>
+    </tr>
+    <% }) %>
+    <% if (!products.length) { %><tr><td colspan="6" class="text-center text-muted"><%= t('no_products') %></td></tr><% } %>
+  </tbody>
+</table>
+</div>
+
+<!-- Add Modal -->
+<div class="modal fade" id="addModal"><div class="modal-dialog"><div class="modal-content">
+  <form method="POST" action="/products/add">
+    <div class="modal-header"><h5><%= t('add_product') %></h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
+    <div class="modal-body">
+      <div class="mb-3"><input type="text" name="product_code" class="form-control" placeholder="<%= t('product_code') %>" required></div>
+      <div class="mb-3"><input type="text" name="product_name" class="form-control" placeholder="<%= t('product_name') %>" required></div>
+      <div class="mb-3">
+        <select name="category_id" class="form-select ts-select">
+          <option value=""><%= t('no_category') %></option>
+          <% categories.forEach(c => { %><option value="<%= c.category_id %>"><%= c.category_name %></option><% }) %>
+        </select>
+      </div>
+      <div class="row">
+        <div class="col"><input type="text" name="unit" class="form-control" placeholder="<%= t('unit') %> (kg, cái...)"></div>
+        <div class="col"><input type="number" name="sell_price" class="form-control" placeholder="<%= t('price') %>" step="1000"></div>
+      </div>
+    </div>
+    <div class="modal-footer"><button type="submit" class="btn btn-primary"><%= t('save') %></button></div>
+  </form>
+</div></div></div>
+
+<%- include('partials/footer') %>
