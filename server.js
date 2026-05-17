@@ -43,7 +43,7 @@ app.use('/imports', auth, require('./routes/imports'));
 app.use('/reports', auth, require('./routes/reports'));
 app.use('/profile', auth, require('./routes/profile'));
 
-app.get('/', auth, (req, res) => res.redirect('/products'));
+app.get('/', auth, (req, res) => res.redirect('/sales'));
 
 // Initialize database then start server
 initDb().then(() => {

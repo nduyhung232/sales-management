@@ -17,7 +17,7 @@ router.post('/login', async (req, res) => {
   }
 
   req.session.user = { user_id: user.user_id, username: user.username, full_name: user.full_name };
-  res.redirect('/products');
+  res.redirect('/sales');
 });
 
 router.get('/register', (req, res) => {
